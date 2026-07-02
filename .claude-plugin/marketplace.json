@@ -1,0 +1,16 @@
+{
+  "name": "sap-fiori-toolkit",
+  "owner": {
+    "name": "Mohammed Sijas",
+    "email": "me@sijas.in",
+    "github": "https://github.com/codingwithsijas"
+  },
+  "plugins": [
+    {
+      "name": "fiori-setup",
+      "source": "./plugins/fiori-setup",
+      "description": "SAP Fiori / UI5 development toolkit — skills, agents, and MCP servers for scaffolding, feature development, and code review.",
+      "version": "1.0.0"
+    }
+  ]
+}
