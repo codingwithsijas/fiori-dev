@@ -4,6 +4,7 @@
     "ui5-typescript-conversion@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true,
     "code-modernization@claude-plugins-official": true,
-    "pr-review-toolkit@claude-plugins-official": true
+    "pr-review-toolkit@claude-plugins-official": true,
+    "fiori-setup@sap-fiori-toolkit": true
   }
 }

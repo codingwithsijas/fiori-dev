@@ -114,6 +114,12 @@ cd ~/fiori-dev && git pull
 
 ## Version history
 
+### 1.0.1 — 2026-07-02
+
+#### Fixed
+- `ONBOARDING.md` install command referenced wrong marketplace alias (`fiori-dev` → `sap-fiori-toolkit`)
+- `ONBOARDING.md` update command fixed to match correct marketplace alias
+
 ### 1.0.0 — 2026-07-02
 
 Initial public release.

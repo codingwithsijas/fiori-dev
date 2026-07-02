@@ -13,17 +13,11 @@ Get the full SAP Fiori / UI5 development toolkit (skills, agents, MCP servers) i
 
 ## Install the Plugin
 
-**Step 1 — Clone the repo (run in your terminal, one-time):**
+**Run these commands in Claude Code:**
 
 ```bash
-git clone https://github.com/codingwithsijas/fiori-dev.git ~/fiori-dev
-```
-
-**Step 2 — Add the marketplace and install (run in Claude Code):**
-
-```bash
-/plugin marketplace add ~/fiori-dev
-/plugin install fiori-setup@sap-fiori-toolkit
+/plugin marketplace add https://github.com/codingwithsijas/fiori-dev
+/plugin install fiori-setup@sap-fiori-toolkit --scope project
 ```
 
 Restart Claude Code when prompted.
@@ -97,14 +91,6 @@ If a `webapp/` folder already exists, skip `/project-setup`. Use the skills dire
 
 ## Keeping the Plugin Up to Date
 
-Pull the latest changes in your terminal, then update the plugin in Claude Code:
-
 ```bash
-# In your terminal
-cd ~/fiori-dev && git pull
-```
-
-```bash
-# In Claude Code
-/plugin update fiori-setup@fiori-toolkit
+/plugin update fiori-setup@sap-fiori-toolkit
 ```
