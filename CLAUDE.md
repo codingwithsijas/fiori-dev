@@ -103,42 +103,27 @@ Bump the version whenever `plugins/fiori-setup/` content changes (after `/sync-p
 Users pull updates with:
 
 ```bash
-# In their terminal
-cd ~/fiori-dev && git pull
-
-# In Claude Code
-/plugin update fiori-setup@fiori-toolkit
+/plugin update fiori-setup@sap-fiori-toolkit
 ```
 
 ---
 
 ## Version history
 
+### 1.0.2 — 2026-07-02
+
+- Fixed: `fiori-feature-dev` skill now always presents a plan and waits for user approval before writing any file (was conditional on "non-trivial")
+- Fixed: skill memory skeleton is written at Step 0 if no memory file exists, preventing loss of context on session interruption
+- Fixed: Step 9 memory update is now a hard gate — feature cannot be declared complete until memory is written
+
 ### 1.0.1 — 2026-07-02
 
-#### Fixed
-- `ONBOARDING.md` install command referenced wrong marketplace alias (`fiori-dev` → `sap-fiori-toolkit`)
-- `ONBOARDING.md` update command fixed to match correct marketplace alias
+- Fixed: `ONBOARDING.md` install command referenced wrong marketplace alias (`fiori-dev` → `sap-fiori-toolkit`)
+- Fixed: `ONBOARDING.md` update command corrected to match marketplace alias
 
 ### 1.0.0 — 2026-07-02
 
-Initial public release.
-
-#### Skills
-- `/setup-prerequisites` — installs MCP servers and Claude Code plugins; skips if run within 7 days
-- `/project-setup` — two-phase: analyses requirements + recommends Fiori Tools wizard config (Phase 1), then plans and implements features after user scaffolds the project (Phase 2)
-- `/fiori-feature-dev` — implements UI features post-scaffold; always consults `fiori-frontend-dev` agent before writing code
-- `/odata-v4-reader` — standalone OData V4 service discovery
-- `/ui5-code-review` — reviews staged files against UI5 best practices; covers annotations via `annotation-expert`
-
-#### Agents
-- `fiori-frontend-dev`, `annotation-expert`, `odata-v4-reader`, `cap-service-explorer`
-
-#### Design principles
-- Fiori Tools owns Fiori Elements scaffolding — the plugin never runs generators
-- All implementation decisions route through `fiori-frontend-dev` before code is written
-- All annotation work routes through `annotation-expert`
-- Each skill maintains a `memory.md` in the target project for session continuity
+Initial public release. Skills: `/setup-prerequisites`, `/project-setup`, `/fiori-feature-dev`, `/odata-v4-reader`, `/ui5-code-review`. Agents: `fiori-frontend-dev`, `annotation-expert`, `odata-v4-reader`, `cap-service-explorer`. MCP servers: `fiori-mcp-server`, `ui5-mcp-server`, `cap-mcp-server`.
 
 ---
 

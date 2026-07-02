@@ -31,7 +31,31 @@ If found, read it in full. Use it to:
 - Avoid re-implementing work already marked done
 - Apply any project-specific patterns, quirks, or decisions recorded in previous sessions
 
-If not found, proceed — memory will be created at the end of this session.
+If not found, **create the file now** (skeleton only — fill in project details after Step 1):
+
+```markdown
+# fiori-feature-dev memory — (project name TBD)
+
+## Project
+(populated after Step 1)
+
+## Completed features
+none
+
+## In-progress feature
+none
+
+## Pending features
+(populated after Step 4)
+
+## Project-specific patterns
+(populated as discovered)
+
+## Known issues
+none
+```
+
+Write the skeleton immediately so it exists before implementation begins. It will be updated with full project details at the end of Step 1 and again at the end of each feature.
 
 ---
 
@@ -107,7 +131,9 @@ fiori-frontend-dev: "Search for the correct pattern for {{feature}} in a Fiori {
 
 ## Step 4 — Plan the Implementation
 
-Write out what will be created or changed before touching any file:
+**Always present the plan to the user and wait for approval before writing any file — no exceptions, even for single-file changes.**
+
+Write out:
 
 - Files to create or modify (view, controller, i18n, routing in manifest)
 - Controls to use and their binding paths (validated against metadata.xml)
@@ -115,7 +141,7 @@ Write out what will be created or changed before touching any file:
 - New i18n keys needed
 - Routing changes (new route + target if adding a new view)
 
-Present this plan to the user before proceeding if the feature is non-trivial (more than one file).
+Do not proceed to Step 5 until the user explicitly approves the plan.
 
 ---
 
@@ -228,7 +254,9 @@ The `annotation-expert` validates every property path against `metadata.xml` bef
 
 ## Step 9 — Update Skill Memory
 
-Create or update `{{absolute_path}}/.claude/skill-memory/fiori-feature-dev/memory.md`:
+**This step is mandatory. Do not proceed to Step 10 or declare the feature complete until the memory file has been written.**
+
+Update `{{absolute_path}}/.claude/skill-memory/fiori-feature-dev/memory.md` with the full project details and feature outcome:
 
 ```markdown
 # fiori-feature-dev memory — {{project name}}
@@ -258,7 +286,7 @@ Create or update `{{absolute_path}}/.claude/skill-memory/fiori-feature-dev/memor
 {{Any unresolved findings, annotation failures, or linter issues left for the user to action}}
 ```
 
-Write the memory file even on the first run. Update it after every completed feature — do not wait until all features are done.
+Write the full memory file now. Do not wait until all planned features are done — update after every completed feature and mark any in-progress feature with its last completed sub-step.
 
 ---
 
