@@ -110,6 +110,12 @@ Users pull updates with:
 
 ## Version history
 
+### 1.0.3 — 2026-07-03
+
+- Added: `fiori-feature-dev` now generates `application.md` on first run, capturing artifact ID, app name, template type (Freestyle / Elements V2 / V4), views, controllers, fragments, util/formatter/model files, UI5 libraries, and backend dependencies (`pom.xml` for RAP/CAP Java, `package.json` for CAP Node.js)
+- Added: staleness check via `git log` — `application.md` is regenerated automatically when `webapp/`, `pom.xml`, or `package.json` have new commits since the last analysis
+- Changed: Step 1 now loads context from `application.md` instead of re-scanning `manifest.json` and the file system on every run
+
 ### 1.0.2 — 2026-07-02
 
 - Fixed: `fiori-feature-dev` skill now always presents a plan and waits for user approval before writing any file (was conditional on "non-trivial")

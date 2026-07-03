@@ -18,20 +18,135 @@ Implement UI features in an existing SAP Fiori / UI5 project. Every decision is 
 
 ---
 
-## Step 0 — Read Skill Memory
+## Step 0 — Application Analysis and Skill Memory
 
-Before doing anything else, check for an existing memory file for this skill in the project:
+### 0a — Read or Regenerate application.md
+
+The file `{{absolute_path}}/.claude/skill-memory/fiori-feature-dev/application.md` is a cached analysis of the project structure. It is the primary source of truth for project shape and must be loaded before anything else.
+
+**Check whether the file exists and is still fresh:**
+
+```bash
+# 1. Does the file exist?
+ls {{absolute_path}}/.claude/skill-memory/fiori-feature-dev/application.md 2>/dev/null
+
+# 2. When was it last written? (file modification timestamp)
+stat -f "%Sm" -t "%Y-%m-%d %H:%M:%S" \
+  {{absolute_path}}/.claude/skill-memory/fiori-feature-dev/application.md 2>/dev/null
+
+# 3. Have any webapp/** or backend files changed since then?
+git -C {{absolute_path}} log --oneline --after="$(stat -f "%Sm" -t "%Y-%m-%dT%H:%M:%S" \
+  {{absolute_path}}/.claude/skill-memory/fiori-feature-dev/application.md 2>/dev/null || echo '1970-01-01T00:00:00')" \
+  -- webapp/ pom.xml package.json 2>/dev/null | head -5
+```
+
+**Regenerate if any of these are true:**
+- The file does not exist
+- The `git log` command above returns one or more commits (source files changed since last analysis)
+
+**If the file is fresh (exists + no new commits), read it and skip to Step 0b.**
+
+---
+
+**To regenerate, run the following in parallel:**
+
+```bash
+# Project identity
+cat {{absolute_path}}/webapp/manifest.json
+
+# App structure
+find {{absolute_path}}/webapp/view       -name "*.view.xml"    | sort
+find {{absolute_path}}/webapp/controller -name "*.controller.*" | sort
+find {{absolute_path}}/webapp/fragment   -name "*.fragment.xml" 2>/dev/null | sort
+find {{absolute_path}}/webapp/util       -name "*.*"            2>/dev/null | sort
+find {{absolute_path}}/webapp/model      -name "*.*"            2>/dev/null | sort
+find {{absolute_path}}/webapp/formatter  -name "*.*"            2>/dev/null | sort
+
+# Component base class → project type
+grep -m1 "UIComponent\|AppComponent\|sap/suite/ui/generic" \
+  {{absolute_path}}/webapp/Component.js 2>/dev/null \
+  || grep -m1 "UIComponent\|AppComponent\|sap/suite/ui/generic" \
+     {{absolute_path}}/webapp/Component.ts 2>/dev/null
+
+# OData version and service paths
+grep -A5 '"dataSources"' {{absolute_path}}/webapp/manifest.json | head -20
+```
+
+```bash
+# Backend dependencies — detect project type first
+if [ -f {{absolute_path}}/pom.xml ]; then
+  # RAP / CAP Java project
+  grep -E "<artifactId>|<groupId>|<version>" {{absolute_path}}/pom.xml \
+    | grep -v "^--$" | head -60
+else
+  # CAP Node.js / pure UI5 project
+  cat {{absolute_path}}/package.json
+fi
+```
+
+**From the gathered data, write `application.md`** using this exact structure:
+
+```markdown
+# Application Analysis — {{project name}}
+_Last analysed: {{ISO date}}_
+
+## Identity
+- **Artifact ID / App ID**: {{sap.app.id from manifest}}
+- **Application name**: {{sap.app.title from manifest}}
+- **Namespace**: {{sap.ui5 namespace}}
+- **UI5 version**: {{sap.ui5.minUI5Version or framework version}}
+- **Framework**: {{SAPUI5 | OpenUI5}}
+
+## Template
+- **Type**: {{Fiori Freestyle | Fiori Elements V2 | Fiori Elements V4}}
+  - Freestyle: Component base = `sap/ui/core/UIComponent`
+  - Elements V2: Component base = `sap/suite/ui/generic/template/lib/AppComponent` OR OData V2 + `sap.ui.generic.app` in manifest
+  - Elements V4: OData V4 + `sap/fe/core/AppComponent` OR `sap.fe.templates` in manifest
+
+## OData Service
+- **Version**: {{V2 | V4}}
+- **Service path**: {{dataSource uri from manifest}}
+- **Metadata path**: {{localUri from manifest}}
+
+## Structure
+
+### Views
+{{list each .view.xml file — filename only, one per line}}
+
+### Controllers
+{{list each .controller.js/.ts file — filename only, one per line}}
+
+### Fragments
+{{list each .fragment.xml file, or "none"}}
+
+### Utilities / Formatters / Models
+{{list files under util/, formatter/, model/ — filename only, or "none"}}
+
+## Libraries
+
+### UI5 Libraries (from manifest sap.ui5.dependencies.libs)
+{{list each library name, one per line}}
+
+### External / Backend Dependencies
+{{If pom.xml found — list groupId:artifactId for each <dependency> block}}
+{{If package.json found — list all keys from "dependencies" and "devDependencies"}}
+```
+
+Write the file to `{{absolute_path}}/.claude/skill-memory/fiori-feature-dev/application.md`.
+
+---
+
+### 0b — Read Skill Memory
+
+Check for `{{absolute_path}}/.claude/skill-memory/fiori-feature-dev/memory.md`:
 
 ```bash
 cat {{absolute_path}}/.claude/skill-memory/fiori-feature-dev/memory.md 2>/dev/null
 ```
 
-If found, read it in full. Use it to:
-- Resume a feature that was in progress when the session broke (`[~]` status)
-- Avoid re-implementing work already marked done
-- Apply any project-specific patterns, quirks, or decisions recorded in previous sessions
+If found, read it in full — use it to resume in-progress features and apply known project patterns.
 
-If not found, **create the file now** (skeleton only — fill in project details after Step 1):
+If not found, **create the skeleton now**:
 
 ```markdown
 # fiori-feature-dev memory — (project name TBD)
@@ -55,34 +170,29 @@ none
 none
 ```
 
-Write the skeleton immediately so it exists before implementation begins. It will be updated with full project details at the end of Step 1 and again at the end of each feature.
+Write the skeleton immediately. It will be filled in after Step 1 and updated after every feature.
 
 ---
 
-## Step 1 — Read Project Context
+## Step 1 — Load Project Context from application.md
 
-Collect the information needed to make correct implementation decisions. Run in parallel:
+`application.md` (written or refreshed in Step 0) is the authoritative project context. Extract and hold in working memory:
 
-```tool
-mcp__plugin_ui5_ui5-mcp-server__get_project_info
-  projectDir: "{{absolute_path}}"
-```
+- **UI5 version** — for API and TypeScript event type decisions (typed events ≥ 1.115.0)
+- **Framework** — SAPUI5 vs OpenUI5
+- **Project type** — Fiori Elements V2, Elements V4, or Freestyle
+- **App namespace** — required for all `sap.ui.define` module paths
+- **OData version** — V2 or V4
+- **Routing config** — read from `manifest.json` if not already captured in `application.md`
+- **Existing views, controllers, fragments** — use the lists from `application.md` to know what already exists before planning
+
+Also load the UI5 guidelines (run in parallel with reading `application.md`):
 
 ```tool
 mcp__plugin_ui5_ui5-mcp-server__get_guidelines
 ```
 
-```bash
-cat {{absolute_path}}/webapp/manifest.json
-```
-
-From the results extract and record:
-- **UI5 version** — determines available APIs and TypeScript event type availability (≥ 1.115.0)
-- **Framework** — SAPUI5 vs OpenUI5
-- **Project type** — Fiori Elements vs Freestyle (check `Component.js` base class: `sap/ui/core/UIComponent` = Freestyle, `sap/suite/ui/generic/template/lib/AppComponent` = Fiori Elements)
-- **App namespace** — needed for correct `sap.ui.define` module paths
-- **OData version** — V2 or V4 (from `manifest.json` dataSources)
-- **Routing config** — existing routes and targets
+Do not re-scan `manifest.json` or the file system for anything already recorded in `application.md`.
 
 ---
 
