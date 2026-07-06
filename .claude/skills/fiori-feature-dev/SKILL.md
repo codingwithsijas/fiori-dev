@@ -18,6 +18,17 @@ Implement UI features in an existing SAP Fiori / UI5 project. Every decision is 
 
 ---
 
+## Protocol Guarantee
+
+These two steps are **non-negotiable** regardless of how the skill was invoked (direct slash command, inline request, or sub-task):
+
+- **Step 6** (linter + manifest validation) — must run after **every** file write, including single-line edits
+- **Step 9** (memory update) — must run after **every** completed feature
+
+The assistant must not declare a feature done until both have run and passed.
+
+---
+
 ## Step 0 — Application Analysis and Skill Memory
 
 ### 0a — Read or Regenerate application.md
@@ -320,7 +331,7 @@ Add a new route and target to `manifest.json` under `sap.ui5/routing`:
 
 ---
 
-## Step 6 — Validate
+## Step 6 — Validate *(mandatory after every file write — no exceptions)*
 
 After writing every file, run the linter scoped to only the changed files:
 
@@ -362,9 +373,9 @@ The `annotation-expert` validates every property path against `metadata.xml` bef
 
 ---
 
-## Step 9 — Update Skill Memory
+## Step 9 — Update Skill Memory *(mandatory — always runs, no exceptions)*
 
-**This step is mandatory. Do not proceed to Step 10 or declare the feature complete until the memory file has been written.**
+**This step is mandatory regardless of invocation method. Do not proceed to Step 10 or declare the feature complete until the memory file has been written.**
 
 Update `{{absolute_path}}/.claude/skill-memory/fiori-feature-dev/memory.md` with the full project details and feature outcome:
 

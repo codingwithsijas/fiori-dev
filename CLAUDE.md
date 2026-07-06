@@ -110,6 +110,12 @@ Users pull updates with:
 
 ## Version history
 
+### 1.0.4 — 2026-07-06
+
+- Added: `fiori-feature-dev` Protocol Guarantee section (after "When to Use") — explicitly states Steps 6 and 9 are non-negotiable regardless of invocation method
+- Changed: Step 6 heading now reads "Validate *(mandatory after every file write — no exceptions)*"
+- Changed: Step 9 heading now reads "Update Skill Memory *(mandatory — always runs, no exceptions)*"
+
 ### 1.0.3 — 2026-07-03
 
 - Added: `fiori-feature-dev` now generates `application.md` on first run, capturing artifact ID, app name, template type (Freestyle / Elements V2 / V4), views, controllers, fragments, util/formatter/model files, UI5 libraries, and backend dependencies (`pom.xml` for RAP/CAP Java, `package.json` for CAP Node.js)
