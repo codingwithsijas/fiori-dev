@@ -26,7 +26,7 @@ plugins/fiori-setup/   ← Synced copy of .claude/skills/ and .claude/agents/
 
 .claude-plugin/marketplace.json  ← Local marketplace manifest (plugin registry)
 .mcp.json                        ← MCP servers for this repo's own dev sessions
-ONBOARDING.md                    ← End-user install and usage guide
+README.md                        ← End-user install and usage guide
 ```
 
 ---
@@ -98,7 +98,7 @@ Use standard semver:
 | minor | New skill or agent added | `2.0.0 → 2.1.0` |
 | major | Breaking change to how a skill works | `1.x.x → 2.0.0` |
 
-Bump the version whenever `plugins/fiori-setup/` content changes (after `/sync-plugin`). Do not bump for changes to `CLAUDE.md`, `ONBOARDING.md`, or repo-level config files — those do not ship to users.
+Bump the version whenever `plugins/fiori-setup/` content changes (after `/sync-plugin`). Do not bump for changes to `CLAUDE.md`, `README.md`, or repo-level config files — those do not ship to users.
 
 Users pull updates with:
 
@@ -141,4 +141,4 @@ Initial public release. Skills: `/setup-prerequisites`, `/project-setup`, `/fior
 
 ## End-user install instructions
 
-See `ONBOARDING.md`. The short version: clone this repo, add as a local marketplace, install the `fiori-setup` plugin, restart Claude Code.
+See `README.md` for install instructions and full feature documentation.
