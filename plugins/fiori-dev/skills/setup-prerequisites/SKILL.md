@@ -178,7 +178,7 @@ Print a summary table:
 | `config.local.json` | ✓ configured / ⚠ using defaults / ✗ not set | — |
 
 End with:
-> **Restart Claude Code** to activate the MCP servers and plugins.
+> To activate the MCP servers and plugins, either run `/reload-plugins` in Claude Code or restart Claude Code.
 
 ---
 

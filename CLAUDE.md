@@ -138,6 +138,10 @@ Users pull updates with:
 
 ## Version history
 
+### 1.1.1 — 2026-07-21
+
+- Fixed: `setup-prerequisites` end message now instructs users to run `/reload-plugins` or restart Claude Code (instead of restart only)
+
 ### 1.1.0 — 2026-07-21
 
 - Renamed: plugin `fiori-setup` → `fiori-dev`; plugin folder moved from `plugins/fiori-setup/` to `plugins/fiori-dev/`
