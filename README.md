@@ -2,7 +2,7 @@
 
 A Claude Code plugin that brings SAP Fiori and UI5 development skills, specialist agents, and three MCP servers into any project. Every implementation decision is validated against live MCP tooling before code is written.
 
-**Current version:** 1.1.1 · **Author:** Mohammed Sijas
+**Current version:** 1.1.2 · **Author:** Mohammed Sijas
 
 ---
 

@@ -108,8 +108,8 @@ If a developer's workspace layout differs, they create `config.local.json` at th
 }
 ```
 
-- `config.local.json` (project root) wins on any key it defines; unset keys fall back to `.claude/config.json`.
-- `setup-prerequisites` (Step 5a) resolves the effective config and checks whether each path exists on disk. Only if a path is **not found** does it prompt the user to create `config.local.json`.
+- `config.local.json` (project root) overrides the plugin default. Unset keys fall back to the plugin's own `config.json`.
+- `setup-prerequisites` (Step 5a) resolves the effective config across both levels and checks whether each path exists on disk. Only if a path is **not found** does it prompt the user to create `config.local.json`.
 - `fiori-frontend-dev` loads the effective config at Step 0 and uses the library source for development guidance and code review when a matching path resolves successfully.
 
 ---
@@ -137,6 +137,10 @@ Users pull updates with:
 ---
 
 ## Version history
+
+### 1.1.2 — 2026-07-21
+
+- Fixed: `setup-prerequisites` and `fiori-frontend-dev` now correctly fall back to the plugin's own `config.json` when no `config.local.json` exists in the project root — resolves false "library not configured" warning when libraries are at the default paths
 
 ### 1.1.1 — 2026-07-21
 

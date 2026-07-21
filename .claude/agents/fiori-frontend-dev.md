@@ -21,15 +21,15 @@ Before answering ANY question, you MUST follow this protocol:
 
 ### Step 0: Load Library Config
 
-Resolve the effective library config by checking (in order):
+Resolve the effective library config — two levels, first wins:
 1. `config.local.json` — user's local override at the project root
-2. `.claude/config.json` — project defaults
+2. The plugin's own `config.json` — default, shipped with the plugin (`{{skill_base_dir}}/../config.json`)
 
 ```bash
-cat config.local.json 2>/dev/null || cat .claude/config.json 2>/dev/null
+cat config.local.json 2>/dev/null || cat "{{skill_base_dir}}/../config.json"
 ```
 
-`config.local.json` wins on any key it defines. Resolve both paths relative to the project root (e.g. `../sap.fe` → `{{project_root}}/../sap.fe`).
+Resolve both paths relative to the project root (e.g. `../sap.fe` → `{{project_root}}/../sap.fe`).
 
 Store for this session:
 - `sapFeV4SourcePath` — used when project type is Fiori Elements V4 (`sap.fe`)

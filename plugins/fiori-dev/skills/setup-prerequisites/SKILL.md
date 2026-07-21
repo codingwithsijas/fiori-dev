@@ -123,20 +123,32 @@ If `.mcp.json` is missing or incomplete, create or update it to match the above.
 
 ## Step 5a — Check Library Config
 
-Resolve the effective config (project-local override wins):
+Resolve the effective config — project-local override wins, plugin default is the fallback:
+
+1. `config.local.json` at the project root — user's local override
+2. The plugin's own `config.json` — default, shipped with the plugin (`{{skill_base_dir}}/../config.json`)
 
 ```bash
-cat config.local.json 2>/dev/null || cat .claude/config.json 2>/dev/null
+cat config.local.json 2>/dev/null || cat "{{skill_base_dir}}/../config.json"
 ```
 
 Then verify that the resolved paths actually exist on disk (relative to the project root):
 
 ```bash
-ls "$(node -e "const c=require('./config.local.json') || require('./.claude/config.json'); process.stdout.write(c.sapFeV4SourcePath)")" 2>/dev/null && echo "V4 OK" || echo "V4 NOT FOUND"
-ls "$(node -e "const c=require('./config.local.json') || require('./.claude/config.json'); process.stdout.write(c.sapFeV2SourcePath)")" 2>/dev/null && echo "V2 OK" || echo "V2 NOT FOUND"
+ls "$(node -e "
+  const fs=require('fs');
+  const c=fs.existsSync('./config.local.json') ? require('./config.local.json') :
+          require('{{skill_base_dir}}/../config.json');
+  process.stdout.write(c.sapFeV4SourcePath)")" 2>/dev/null && echo "V4 OK" || echo "V4 NOT FOUND"
+
+ls "$(node -e "
+  const fs=require('fs');
+  const c=fs.existsSync('./config.local.json') ? require('./config.local.json') :
+          require('{{skill_base_dir}}/../config.json');
+  process.stdout.write(c.sapFeV2SourcePath)")" 2>/dev/null && echo "V2 OK" || echo "V2 NOT FOUND"
 ```
 
-**If both paths resolve** → show the effective paths, done.
+**If both paths resolve** → show the effective paths and which config file was used, done.
 
 **If one or both paths are not found**: inform the user which library could not be found at the default location and ask them to provide the correct relative path(s):
 
