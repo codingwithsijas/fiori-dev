@@ -2,7 +2,7 @@
 
 A Claude Code plugin that brings SAP Fiori and UI5 development skills, specialist agents, and three MCP servers into any project. Every implementation decision is validated against live MCP tooling before code is written.
 
-**Current version:** 1.0.4 · **Author:** Mohammed Sijas
+**Current version:** 1.0.5 · **Author:** Mohammed Sijas
 
 ---
 
@@ -64,7 +64,7 @@ Deployment:   # BTP / ABAP / local
 
 ---
 
-### `/fiori-feature-dev`
+### `/develop-fiori-feature`
 
 Implements UI features in an existing scaffold. Works for Fiori Freestyle and Fiori Elements on any backend.
 
@@ -94,7 +94,7 @@ Every run follows a strict 10-step protocol:
 
 ---
 
-### `/odata-v4-reader`
+### `/explore-odata-service`
 
 Explores an OData V4 service before building against it. Returns entity structure, key properties, associations, navigation properties, and can fetch live data records.
 
@@ -115,9 +115,9 @@ Agents are invoked automatically by skills — you do not call them directly. Th
 | Agent | Invoked by | Role |
 | ----- | ---------- | ---- |
 | `fiori-frontend-dev` | All skills | Consults `fiori-mcp-server` and `ui5-mcp-server` to validate every API, control, and pattern before code is written. Acts as a guard against deprecated or incorrect usage. |
-| `annotation-expert` | `fiori-feature-dev` | Writes and validates Fiori Elements OData annotations (`UI.LineItem`, `UI.FieldGroup`, `Common.ValueList`, etc.). Validates every property path against `localService/metadata.xml` before writing. |
-| `odata-v4-reader` | `odata-v4-reader` skill, `fiori-feature-dev` | Reads OData V4 service metadata and fetches live data via the service URL. Used to inform binding paths and `$expand` expressions. |
-| `cap-service-explorer` | `fiori-feature-dev` (CAP projects) | Introspects CAP `.cds` files to extract entity definitions, service exposures, associations, and OData endpoints — without requiring a running server. |
+| `annotation-expert` | `develop-fiori-feature` | Writes and validates Fiori Elements OData annotations (`UI.LineItem`, `UI.FieldGroup`, `Common.ValueList`, etc.). Validates every property path against `localService/metadata.xml` before writing. |
+| `odata-v4-reader` | `explore-odata-service` skill, `develop-fiori-feature` | Reads OData V4 service metadata and fetches live data via the service URL. Used to inform binding paths and `$expand` expressions. |
+| `cap-service-explorer` | `develop-fiori-feature` (CAP projects) | Introspects CAP `.cds` files to extract entity definitions, service exposures, associations, and OData endpoints — without requiring a running server. |
 
 ---
 
@@ -159,7 +159,7 @@ CAP (Cloud Application Programming Model) tooling server. Provides:
 - CDS model search — returns entity definitions, elements, annotations, and HTTP endpoints
 - Documentation search for CAP Node.js and Java APIs
 
-Used by: `cap-service-explorer` agent, `fiori-feature-dev` skill (CAP projects).
+Used by: `cap-service-explorer` agent, `develop-fiori-feature` skill (CAP projects).
 
 ---
 
@@ -172,19 +172,19 @@ Used by: `cap-service-explorer` agent, `fiori-feature-dev` skill (CAP projects).
 2. /project-setup               ← analyses requirements, gives you wizard config
 3. Run Fiori Tools App Wizard   ← you scaffold the project
 4. /project-setup               ← resumes, implements initial feature
-5. /fiori-feature-dev           ← add more features iteratively
+5. /develop-fiori-feature       ← add more features iteratively
 ```
 
 ### Add a feature to an existing app
 
 ```text
-/fiori-feature-dev    ← describe the feature; the skill handles the rest
+/develop-fiori-feature    ← describe the feature; the skill handles the rest
 ```
 
 ### Explore an OData V4 service
 
 ```text
-/odata-v4-reader      ← provide the service URL; get back entity structure and sample data
+/explore-odata-service      ← provide the service URL; get back entity structure and sample data
 ```
 
 ### Review code before a PR

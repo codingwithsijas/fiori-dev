@@ -1,7 +1,7 @@
 {
   "name": "fiori-setup",
   "description": "SAP Fiori / UI5 development toolkit — skills, agents, and MCP servers for scaffolding, feature development, and code review.",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": {
     "name": "Mohammed Sijas",
     "email": "me@sijas.in",

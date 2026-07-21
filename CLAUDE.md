@@ -53,8 +53,8 @@ This runs `rsync -a --delete` from `.claude/skills/` → `plugins/fiori-setup/sk
 | --- | --- | --- |
 | `/setup-prerequisites` | `.claude/skills/setup-prerequisites/SKILL.md` | Installs MCP servers and Claude Code plugins; skips if run within 7 days |
 | `/project-setup` | `.claude/skills/project-setup/SKILL.md` | Two-phase: analyses requirements + recommends wizard config (Phase 1), then implements features after user scaffolds via Fiori Tools (Phase 2) |
-| `/fiori-feature-dev` | `.claude/skills/fiori-feature-dev/SKILL.md` | Implements UI features post-scaffold; always consults `fiori-frontend-dev` agent before writing code |
-| `/odata-v4-reader` | `.claude/skills/odata-v4-reader/SKILL.md` | Explores OData V4 service structure via the `odata-v4-reader` agent |
+| `/develop-fiori-feature` | `.claude/skills/develop-fiori-feature/SKILL.md` | Implements UI features post-scaffold; always consults `fiori-frontend-dev` agent before writing code |
+| `/explore-odata-service` | `.claude/skills/explore-odata-service/SKILL.md` | Explores OData V4 service structure via the `odata-v4-reader` agent |
 | `/ui5-code-review` | `.claude/skills/ui5-code-review/SKILL.md` | Reviews staged files; routes API validation through `fiori-frontend-dev` agent |
 
 ### Agents
@@ -86,6 +86,34 @@ This runs `rsync -a --delete` from `.claude/skills/` → `plugins/fiori-setup/sk
 
 ---
 
+## Library config (`config.json` / `config.local.json`)
+
+The plugin ships a `config.json` with default relative paths (relative to the project root):
+
+```json
+{
+  "sapFeV4SourcePath": "../sap.fe",
+  "sapFeV2SourcePath": "../sap.suite.ui.generic.template"
+}
+```
+
+`.claude/config.json` in this repo is always kept in sync with `plugins/fiori-setup/config.json`.
+
+If a developer's workspace layout differs, they create `config.local.json` at the **project root** with corrected paths — this file is never committed:
+
+```json
+{
+  "sapFeV4SourcePath": "../../libs/sap.fe",
+  "sapFeV2SourcePath": "../../libs/sap.suite.ui.generic.template"
+}
+```
+
+- `config.local.json` (project root) wins on any key it defines; unset keys fall back to `.claude/config.json`.
+- `setup-prerequisites` (Step 5a) resolves the effective config and checks whether each path exists on disk. Only if a path is **not found** does it prompt the user to create `config.local.json`.
+- `fiori-frontend-dev` loads the effective config at Step 0 and uses the library source for development guidance and code review when a matching path resolves successfully.
+
+---
+
 ## Versioning
 
 Version is stored in `plugins/fiori-setup/.claude-plugin/plugin.json`.
@@ -109,6 +137,14 @@ Users pull updates with:
 ---
 
 ## Version history
+
+### 1.0.5 — 2026-07-21
+
+- Renamed: skill `fiori-feature-dev` → `develop-fiori-feature`
+- Renamed: skill `odata-v4-reader` → `explore-odata-service`
+- Added: `config.json` ships with the plugin — default relative paths for `sap.fe` and `sap.suite.ui.generic.template`
+- Added: `setup-prerequisites` Step 5a — resolves effective config, checks library paths on disk, prompts for `config.local.json` if not found
+- Added: `fiori-frontend-dev` Step 0 — loads effective config (`config.local.json` → `.claude/config.json`) at session start and uses library source for development and code review
 
 ### 1.0.4 — 2026-07-06
 

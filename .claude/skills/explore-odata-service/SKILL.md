@@ -1,9 +1,9 @@
 ---
-name: odata-v4-reader
+name: explore-odata-service
 description: Explore an OData V4 service — list entity sets, inspect properties and key fields, trace navigation properties and associations, and retrieve sample data. Use before building a new Fiori app or feature to understand the service structure without having to read raw metadata XML.
 ---
 
-# OData V4 Reader
+# Explore OData Service
 
 Explore and document an OData V4 service. Use this before scaffolding a project or implementing a feature when you need to understand what the service exposes — entity sets, properties, associations, and live data samples.
 
@@ -21,7 +21,7 @@ Explore and document an OData V4 service. Use this before scaffolding a project 
 Check for an existing memory file for this skill in the project:
 
 ```bash
-cat .claude/skill-memory/odata-v4-reader/memory.md 2>/dev/null
+cat .claude/skill-memory/explore-odata-service/memory.md 2>/dev/null
 ```
 
 If found, read it in full. If the service has been explored before, present the cached summary to the user and ask whether to re-fetch or use the cached result. Only re-invoke the agent if the user confirms the service may have changed.
@@ -64,7 +64,7 @@ After presenting the agent's output, call out what the user needs for their next
 
 Suggest the next command based on what the user is trying to do — e.g.:
 - "Run `/project-setup` with entity set `{{EntitySet}}` and key `{{KeyProperty}}`"
-- "Run `/fiori-feature-dev` to add a detail page bound to `{{NavProperty}}`"
+- "Run `/develop-fiori-feature` to add a detail page bound to `{{NavProperty}}`"
 
 ---
 
@@ -76,10 +76,10 @@ If the user wants to see real data, ask the agent to fetch a small sample (top 3
 
 ## Step 5 — Update Skill Memory
 
-Create or update `.claude/skill-memory/odata-v4-reader/memory.md` in the current working directory:
+Create or update `.claude/skill-memory/explore-odata-service/memory.md` in the current working directory:
 
 ```markdown
-# odata-v4-reader memory
+# explore-odata-service memory
 
 ## Service
 - URL: {{service_url}}

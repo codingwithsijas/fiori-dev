@@ -8,7 +8,7 @@ description: Bootstrap a new SAP Fiori / UI5 project. Analyses requirements, rec
 This skill runs in two distinct phases separated by a user action (running the Fiori Tools Application Wizard).
 
 **Phase 1** — Read requirements → consult `fiori-frontend-dev` → produce a ready-to-use wizard config for the user.
-**Phase 2** — User provides the generated project path → skill resumes, writes `plan.md`, implements features via `fiori-feature-dev`.
+**Phase 2** — User provides the generated project path → skill resumes, writes `plan.md`, implements features via `develop-fiori-feature`.
 
 > **Fiori Tools owns project scaffolding.** This skill never runs generators or creates project files. It analyses, recommends, and then builds on top of what Fiori Tools generated.
 
@@ -248,28 +248,28 @@ Update this file after each completed feature.
 
 ---
 
-### Step 9 — Implement Features via `fiori-feature-dev`
+### Step 9 — Implement Features via `develop-fiori-feature`
 
 Work through the features in `plan.md` one at a time, in order.
 
 For each feature:
 
 1. Mark it `[~]` (in progress) in `plan.md`
-2. Invoke the `fiori-feature-dev` skill with:
+2. Invoke the `develop-fiori-feature` skill with:
    - The feature description
    - Project path, namespace, entity set, OData version
    - Metadata location: `{{project_path}}/webapp/localService/metadata.xml`
    - Any constraints from the plan
 
 ```skill
-fiori-feature-dev
+develop-fiori-feature
 ```
 
-3. Once `fiori-feature-dev` reports the feature complete, mark it `[x]` in `plan.md`
+3. Once `develop-fiori-feature` reports the feature complete, mark it `[x]` in `plan.md`
 4. Update `memory.md` — move the feature from pending to completed
 5. Proceed to the next feature
 
-**Do not implement features directly** — all views, controllers, bindings, routing, i18n, and annotations go through `fiori-feature-dev`, which delegates annotation work further to `annotation-expert`.
+**Do not implement features directly** — all views, controllers, bindings, routing, i18n, and annotations go through `develop-fiori-feature`, which delegates annotation work further to `annotation-expert`.
 
 ---
 
@@ -277,7 +277,7 @@ fiori-feature-dev
 
 When all features in `plan.md` are marked `[x]`:
 
-- [ ] All features implemented and validated by `fiori-feature-dev`
+- [ ] All features implemented and validated by `develop-fiori-feature`
 - [ ] `plan.md` shows all items `[x]`
 - [ ] `memory.md` up to date
 - [ ] Linter reports zero findings

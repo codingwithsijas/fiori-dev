@@ -1,9 +1,9 @@
 ---
-name: fiori-feature-dev
+name: develop-fiori-feature
 description: Implement any UI feature in a Fiori Freestyle or Fiori Elements project post-setup — views, controllers, OData bindings, routing, i18n, fragments, and annotations. Validates every implementation decision against the UI5 and Fiori MCP servers before writing code. Use for all development work after the project scaffold exists.
 ---
 
-# Fiori Feature Dev
+# Develop Fiori Feature
 
 Implement UI features in an existing SAP Fiori / UI5 project. Every decision is validated against the UI5 and Fiori MCP servers before any file is written. Works for Fiori Freestyle and Fiori Elements projects on any backend (OData V2/V4, CAP, RAP, mock).
 
@@ -33,21 +33,21 @@ The assistant must not declare a feature done until both have run and passed.
 
 ### 0a — Read or Regenerate application.md
 
-The file `{{absolute_path}}/.claude/skill-memory/fiori-feature-dev/application.md` is a cached analysis of the project structure. It is the primary source of truth for project shape and must be loaded before anything else.
+The file `{{absolute_path}}/.claude/skill-memory/develop-fiori-feature/application.md` is a cached analysis of the project structure. It is the primary source of truth for project shape and must be loaded before anything else.
 
 **Check whether the file exists and is still fresh:**
 
 ```bash
 # 1. Does the file exist?
-ls {{absolute_path}}/.claude/skill-memory/fiori-feature-dev/application.md 2>/dev/null
+ls {{absolute_path}}/.claude/skill-memory/develop-fiori-feature/application.md 2>/dev/null
 
 # 2. When was it last written? (file modification timestamp)
 stat -f "%Sm" -t "%Y-%m-%d %H:%M:%S" \
-  {{absolute_path}}/.claude/skill-memory/fiori-feature-dev/application.md 2>/dev/null
+  {{absolute_path}}/.claude/skill-memory/develop-fiori-feature/application.md 2>/dev/null
 
 # 3. Have any webapp/** or backend files changed since then?
 git -C {{absolute_path}} log --oneline --after="$(stat -f "%Sm" -t "%Y-%m-%dT%H:%M:%S" \
-  {{absolute_path}}/.claude/skill-memory/fiori-feature-dev/application.md 2>/dev/null || echo '1970-01-01T00:00:00')" \
+  {{absolute_path}}/.claude/skill-memory/develop-fiori-feature/application.md 2>/dev/null || echo '1970-01-01T00:00:00')" \
   -- webapp/ pom.xml package.json 2>/dev/null | head -5
 ```
 
@@ -143,16 +143,16 @@ _Last analysed: {{ISO date}}_
 {{If package.json found — list all keys from "dependencies" and "devDependencies"}}
 ```
 
-Write the file to `{{absolute_path}}/.claude/skill-memory/fiori-feature-dev/application.md`.
+Write the file to `{{absolute_path}}/.claude/skill-memory/develop-fiori-feature/application.md`.
 
 ---
 
 ### 0b — Read Skill Memory
 
-Check for `{{absolute_path}}/.claude/skill-memory/fiori-feature-dev/memory.md`:
+Check for `{{absolute_path}}/.claude/skill-memory/develop-fiori-feature/memory.md`:
 
 ```bash
-cat {{absolute_path}}/.claude/skill-memory/fiori-feature-dev/memory.md 2>/dev/null
+cat {{absolute_path}}/.claude/skill-memory/develop-fiori-feature/memory.md 2>/dev/null
 ```
 
 If found, read it in full — use it to resume in-progress features and apply known project patterns.
@@ -160,7 +160,7 @@ If found, read it in full — use it to resume in-progress features and apply kn
 If not found, **create the skeleton now**:
 
 ```markdown
-# fiori-feature-dev memory — (project name TBD)
+# develop-fiori-feature memory — (project name TBD)
 
 ## Project
 (populated after Step 1)
@@ -377,10 +377,10 @@ The `annotation-expert` validates every property path against `metadata.xml` bef
 
 **This step is mandatory regardless of invocation method. Do not proceed to Step 10 or declare the feature complete until the memory file has been written.**
 
-Update `{{absolute_path}}/.claude/skill-memory/fiori-feature-dev/memory.md` with the full project details and feature outcome:
+Update `{{absolute_path}}/.claude/skill-memory/develop-fiori-feature/memory.md` with the full project details and feature outcome:
 
 ```markdown
-# fiori-feature-dev memory — {{project name}}
+# develop-fiori-feature memory — {{project name}}
 
 ## Project
 - Path: {{absolute_path}}

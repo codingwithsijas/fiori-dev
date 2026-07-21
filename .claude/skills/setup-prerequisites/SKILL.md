@@ -121,6 +121,45 @@ If `.mcp.json` is missing or incomplete, create or update it to match the above.
 
 ---
 
+## Step 5a — Check Library Config
+
+Resolve the effective config (project-local override wins):
+
+```bash
+cat config.local.json 2>/dev/null || cat .claude/config.json 2>/dev/null
+```
+
+Then verify that the resolved paths actually exist on disk (relative to the project root):
+
+```bash
+ls "$(node -e "const c=require('./config.local.json') || require('./.claude/config.json'); process.stdout.write(c.sapFeV4SourcePath)")" 2>/dev/null && echo "V4 OK" || echo "V4 NOT FOUND"
+ls "$(node -e "const c=require('./config.local.json') || require('./.claude/config.json'); process.stdout.write(c.sapFeV2SourcePath)")" 2>/dev/null && echo "V2 OK" || echo "V2 NOT FOUND"
+```
+
+**If both paths resolve** → show the effective paths, done.
+
+**If one or both paths are not found**: inform the user which library could not be found at the default location and ask them to provide the correct relative path(s):
+
+| Key | Purpose |
+|---|---|
+| `sapFeV4SourcePath` | Path to locally cloned `sap.fe` repo, relative to the project root (e.g. `../sap.fe`). Used by `fiori-frontend-dev` for Fiori Elements V4 projects. |
+| `sapFeV2SourcePath` | Path to locally cloned `sap.suite.ui.generic.template` repo, relative to the project root (e.g. `../sap.suite.ui.generic.template`). Used for Fiori Elements V2 projects. |
+
+Write the corrected paths to `config.local.json` in the project root:
+
+```json
+{
+  "sapFeV4SourcePath": "{{user-provided path}}",
+  "sapFeV2SourcePath": "{{user-provided path}}"
+}
+```
+
+Remind the user to add `config.local.json` to `.gitignore` — paths are relative to each developer's workspace layout and should not be committed.
+
+> **Note**: Providing corrected paths is optional. If the user skips this, `fiori-frontend-dev` will still work — it simply won't consult the library source during development and code review.
+
+---
+
 ## Step 5 — Report Results
 
 Print a summary table:
@@ -136,6 +175,7 @@ Print a summary table:
 | `code-modernization` plugin | ✓ project scope / ✗ missing | x.x.x |
 | `pr-review-toolkit` plugin | ✓ project scope / ✗ missing | x.x.x |
 | `.mcp.json` | ✓ complete / ✗ incomplete | — |
+| `config.local.json` | ✓ configured / ⚠ using defaults / ✗ not set | — |
 
 End with:
 > **Restart Claude Code** to activate the MCP servers and plugins.
