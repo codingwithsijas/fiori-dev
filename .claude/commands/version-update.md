@@ -7,22 +7,22 @@ Bump the plugin version, update `CLAUDE.md` version history, and sync the plugin
 Run sync first and check for differences:
 
 ```bash
-rsync -a --delete .claude/skills/ plugins/fiori-setup/skills/
-rsync -a --delete .claude/agents/ plugins/fiori-setup/agents/
-git diff --name-only plugins/fiori-setup/
-git status --short plugins/fiori-setup/
+rsync -a --delete .claude/skills/ plugins/fiori-dev/skills/
+rsync -a --delete .claude/agents/ plugins/fiori-dev/agents/
+git diff --name-only plugins/fiori-dev/
+git status --short plugins/fiori-dev/
 ```
 
 Also check if `.mcp.json` inside the plugin folder has changed:
 
 ```bash
-git diff plugins/fiori-setup/.mcp.json
+git diff plugins/fiori-dev/.mcp.json
 ```
 
 Plugin files that warrant a version bump:
-- Any file under `plugins/fiori-setup/skills/`
-- Any file under `plugins/fiori-setup/agents/`
-- `plugins/fiori-setup/.mcp.json` — MCP server additions, removals, or version changes
+- Any file under `plugins/fiori-dev/skills/`
+- Any file under `plugins/fiori-dev/agents/`
+- `plugins/fiori-dev/.mcp.json` — MCP server additions, removals, or version changes
 
 **If none of the above have changed** — say: "No plugin files have changed. Version bump not needed." and stop.
 
@@ -52,7 +52,7 @@ If the bump doesn't match, flag it to the user before continuing.
 
 ## Step 4 — Bump version in plugin.json
 
-Edit `plugins/fiori-setup/.claude-plugin/plugin.json` to set the new version.
+Edit `plugins/fiori-dev/.claude-plugin/plugin.json` to set the new version.
 
 ## Step 5 — Add version history entry to CLAUDE.md
 

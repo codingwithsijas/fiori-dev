@@ -5,6 +5,6 @@
     "feature-dev@claude-plugins-official": true,
     "code-modernization@claude-plugins-official": true,
     "pr-review-toolkit@claude-plugins-official": true,
-    "fiori-setup@sap-fiori-toolkit": true
+    "fiori-dev@sap-fiori-toolkit": true
   }
 }

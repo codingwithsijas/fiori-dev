@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-This is a **Claude Code plugin template** — not a Fiori application. It ships a plugin called `fiori-setup` that users install into their own SAP Fiori / UI5 projects. The plugin provides skills, agents, and MCP server wiring for scaffolding, feature development, and code review.
+This is a **Claude Code plugin template** — not a Fiori application. It ships a plugin called `fiori-dev` that users install into their own SAP Fiori / UI5 projects. The plugin provides skills, agents, and MCP server wiring for scaffolding, feature development, and code review.
 
-There is no build system, no test runner, and no application to start. The "source of truth" for the plugin is `.claude/` — `plugins/fiori-setup/` is a synced copy.
+There is no build system, no test runner, and no application to start. The "source of truth" for the plugin is `.claude/` — `plugins/fiori-dev/` is a synced copy.
 
 ---
 
@@ -20,7 +20,7 @@ There is no build system, no test runner, and no application to start. The "sour
   settings.json        ← Enabled plugins (project scope)
   settings.local.json  ← Allowed permissions + enabled MCP servers
 
-plugins/fiori-setup/   ← Synced copy of .claude/skills/ and .claude/agents/
+plugins/fiori-dev/   ← Synced copy of .claude/skills/ and .claude/agents/
   .claude-plugin/plugin.json  ← Plugin manifest (name, version, author)
   .mcp.json                   ← MCP servers bundled with the plugin
 
@@ -33,7 +33,7 @@ README.md                        ← End-user install and usage guide
 
 ## The sync workflow
 
-`.claude/` is where all edits happen. `plugins/fiori-setup/` is never edited directly.
+`.claude/` is where all edits happen. `plugins/fiori-dev/` is never edited directly.
 
 To push changes to the plugin folder, run:
 
@@ -41,7 +41,7 @@ To push changes to the plugin folder, run:
 /sync-plugin
 ```
 
-This runs `rsync -a --delete` from `.claude/skills/` → `plugins/fiori-setup/skills/` and `.claude/agents/` → `plugins/fiori-setup/agents/`. Always run it before committing.
+This runs `rsync -a --delete` from `.claude/skills/` → `plugins/fiori-dev/skills/` and `.claude/agents/` → `plugins/fiori-dev/agents/`. Always run it before committing.
 
 ---
 
@@ -97,7 +97,7 @@ The plugin ships a `config.json` with default relative paths (relative to the pr
 }
 ```
 
-`.claude/config.json` in this repo is always kept in sync with `plugins/fiori-setup/config.json`.
+`.claude/config.json` in this repo is always kept in sync with `plugins/fiori-dev/config.json`.
 
 If a developer's workspace layout differs, they create `config.local.json` at the **project root** with corrected paths — this file is never committed:
 
@@ -116,7 +116,7 @@ If a developer's workspace layout differs, they create `config.local.json` at th
 
 ## Versioning
 
-Version is stored in `plugins/fiori-setup/.claude-plugin/plugin.json`.
+Version is stored in `plugins/fiori-dev/.claude-plugin/plugin.json`.
 
 Use standard semver:
 
@@ -126,17 +126,24 @@ Use standard semver:
 | minor | New skill or agent added | `2.0.0 → 2.1.0` |
 | major | Breaking change to how a skill works | `1.x.x → 2.0.0` |
 
-Bump the version whenever `plugins/fiori-setup/` content changes (after `/sync-plugin`). Do not bump for changes to `CLAUDE.md`, `README.md`, or repo-level config files — those do not ship to users.
+Bump the version whenever `plugins/fiori-dev/` content changes (after `/sync-plugin`). Do not bump for changes to `CLAUDE.md`, `README.md`, or repo-level config files — those do not ship to users.
 
 Users pull updates with:
 
 ```bash
-/plugin update fiori-setup@sap-fiori-toolkit
+/plugin update fiori-dev@sap-fiori-toolkit
 ```
 
 ---
 
 ## Version history
+
+### 1.1.0 — 2026-07-21
+
+- Renamed: plugin `fiori-setup` → `fiori-dev`; plugin folder moved from `plugins/fiori-setup/` to `plugins/fiori-dev/`
+- Changed: install command updated to `/plugin install fiori-dev@sap-fiori-toolkit --scope project`
+- Changed: update command updated to `/plugin update fiori-dev@sap-fiori-toolkit`
+- Changed: `CLAUDE.md` and `README.md` updated throughout to reflect new plugin name
 
 ### 1.0.5 — 2026-07-21
 

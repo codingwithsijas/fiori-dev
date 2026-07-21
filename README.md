@@ -1,8 +1,8 @@
-# fiori-setup — SAP Fiori / UI5 Claude Code Plugin
+# fiori-dev — SAP Fiori / UI5 Claude Code Plugin
 
 A Claude Code plugin that brings SAP Fiori and UI5 development skills, specialist agents, and three MCP servers into any project. Every implementation decision is validated against live MCP tooling before code is written.
 
-**Current version:** 1.0.5 · **Author:** Mohammed Sijas
+**Current version:** 1.1.0 · **Author:** Mohammed Sijas
 
 ---
 
@@ -19,7 +19,7 @@ Run these two commands inside Claude Code — no cloning, no copying files:
 
 ```bash
 /plugin marketplace add https://github.com/codingwithsijas/fiori-dev
-/plugin install fiori-setup@sap-fiori-toolkit --scope project
+/plugin install fiori-dev@sap-fiori-toolkit --scope project
 ```
 
 Restart Claude Code when prompted.
@@ -198,7 +198,7 @@ Used by: `cap-service-explorer` agent, `develop-fiori-feature` skill (CAP projec
 ## Keep the Plugin Up to Date
 
 ```bash
-/plugin update fiori-setup@sap-fiori-toolkit
+/plugin update fiori-dev@sap-fiori-toolkit
 ```
 
 ---
@@ -212,7 +212,7 @@ Used by: `cap-service-explorer` agent, `develop-fiori-feature` skill (CAP projec
   commands/        ← slash commands (e.g. sync-plugin)
   settings.json
 
-plugins/fiori-setup/   ← synced copy — never edit directly
+plugins/fiori-dev/   ← synced copy — never edit directly
   .claude-plugin/plugin.json   ← name, version, author
   .mcp.json                    ← bundled MCP server config
 
@@ -231,8 +231,8 @@ To push edits from `.claude/` into the plugin folder:
 ## Contributing
 
 1. Edit skills in `.claude/skills/` or agents in `.claude/agents/`
-2. Run `/sync-plugin` to copy changes to `plugins/fiori-setup/`
-3. Bump the version in `plugins/fiori-setup/.claude-plugin/plugin.json` (semver patch/minor/major)
+2. Run `/sync-plugin` to copy changes to `plugins/fiori-dev/`
+3. Bump the version in `plugins/fiori-dev/.claude-plugin/plugin.json` (semver patch/minor/major)
 4. Add a version entry to `CLAUDE.md`
 5. Commit and push
 

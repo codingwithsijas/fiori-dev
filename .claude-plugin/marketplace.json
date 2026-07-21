@@ -7,8 +7,8 @@
   },
   "plugins": [
     {
-      "name": "fiori-setup",
-      "source": "./plugins/fiori-setup",
+      "name": "fiori-dev",
+      "source": "./plugins/fiori-dev",
       "description": "SAP Fiori / UI5 development toolkit — skills, agents, and MCP servers for scaffolding, feature development, and code review.",
       "version": "1.0.0"
     }
