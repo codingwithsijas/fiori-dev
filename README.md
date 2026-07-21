@@ -17,12 +17,17 @@ A Claude Code plugin that brings SAP Fiori and UI5 development skills, specialis
 
 Run these two commands inside Claude Code — no cloning, no copying files:
 
+**Step 1 — Add the marketplace:**
 ```bash
 /plugin marketplace add https://github.com/codingwithsijas/fiori-dev
+```
+
+**Step 2 — Install the plugin:**
+```bash
 /plugin install fiori-dev@sap-fiori-toolkit --scope project
 ```
 
-Restart Claude Code when prompted.
+To activate the plugin, either run `/reload-plugins` in Claude Code or restart Claude Code.
 
 ---
 
