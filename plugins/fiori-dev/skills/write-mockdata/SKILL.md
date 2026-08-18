@@ -5,7 +5,9 @@ description: Write or update SAP FE Mockserver mockdata files — JSON datasets,
 
 # Write Mockdata
 
-Write and maintain `sap-fe-mockserver` (`@sap-ux/ui5-middleware-fe-mockserver`) mockdata for an SAP Fiori / UI5 project. Produces JSON datasets and JS hook files validated against `metadata.xml`. Works for Fiori Freestyle and Fiori Elements projects on OData V2 and V4.
+Write and maintain `sap-fe-mockserver` (`@sap-ux/ui5-middleware-fe-mockserver`) mockdata for an SAP Fiori / UI5 project. Produces JSON datasets and JS hook files validated against `metadata.xml`.
+
+> **Scope**: This skill applies only to **UI5 Tooling projects** that use `sap-fe-mockserver` as a middleware (configured in `ui5-mock.yaml` or `ui5.yaml`). It does not apply to CAP-native mocking (`cds mock`) or other mock strategies.
 
 ## When to Use
 
@@ -42,6 +44,43 @@ Write and maintain `sap-fe-mockserver` (`@sap-ux/ui5-middleware-fe-mockserver`) 
 - Export only the hooks you need; unimplemented hooks fall back to mockserver defaults.
 - Always end overridden hooks with `this.base.<hook>.apply(this, arguments)` — except `onAfterRead` and `executeAction`, which return a value.
 - In `onAfterRead`, always filter the `data` parameter. Never `require()` the JSON file and filter it directly — that bypasses key predicates, tenant isolation, and mockserver resolution. The only valid exception is a value help that must return its full static list.
+- `throwError(message, statusCode?, messageData?, isSAPMessage?, headers?)` — call `this.throwError(...)` inside any hook to return an error response immediately.
+
+### `odataRequest.queryPath` structure
+
+Each URL path segment becomes a `queryPath` entry with shape `{ path: string, keys: Record<string, any> }`:
+
+| Index | Corresponds to |
+| --- | --- |
+| `[0]` | Root entity set (e.g. `Project`) |
+| `[1]` | First navigation (e.g. `_Element`) |
+| `[2]` | Second navigation (e.g. `_Team`) |
+
+`keys` is populated when the URL contains a key predicate.
+
+### `base` API reference
+
+Accessible as `this.base.xxx` inside any hook:
+
+| Method | Signature | Description |
+| --- | --- | --- |
+| `addEntry` | `(mockEntry, odataRequest?) => void` | Add a record |
+| `updateEntry` | `(keyValues, newData, odataRequest?) => void` | Update a record by key |
+| `removeEntry` | `(keyValues, odataRequest?) => void` | Delete a record by key |
+| `getEntityInterface` | `(entityName, serviceAlias?) => Promise<interface>` | Get interface for an entity set |
+
+Entity interface methods (returned by `getEntityInterface`):
+
+| Method | Description |
+| --- | --- |
+| `addEntry(mockEntry)` | Add a new record |
+| `updateEntry(keyValues, patchData)` | Update — merges, preserves existing fields |
+| `removeEntry(keyValues)` | Delete a record |
+| `getAllEntries()` | Return all records |
+| `fetchEntries(keyValues)` | Return records matching key values |
+| `hasEntry(keyValues)` | Check if a record exists |
+| `getEmptyObject()` | Return an empty template object for the entity |
+| `generateKey(property)` | Generate a new GUID or key value |
 
 ### `getReferentialConstraints` rules
 
@@ -225,10 +264,71 @@ function executeAction(actionDefinition, actionData, keys, odataRequest) {
     }
 }
 
+// onDraftPrepare — inject SAP__Messages for draft validation warnings/errors
+async function onDraftPrepare(actionDefinition, responseData, keys, odataRequest) {
+    responseData['SAP__Messages'] = [{
+        code: '001',
+        message: 'Validation warning',
+        numericSeverity: 3,
+        target: '/MyEntity(ID=1,IsActiveEntity=false)/MyField',
+        transition: true
+    }];
+}
+
 module.exports = { addEntry, onAfterRead, updateEntry, removeEntry, executeAction };
 ```
 
 Export only the hooks actually needed — remove unused ones from both the function definitions and `module.exports`.
+
+### Shared Entity Set Pattern (Discriminator)
+
+When multiple navigation properties on a parent all resolve to the same child entity set, use all three mechanisms together:
+
+1. **`getReferentialConstraints`** on the parent EntityType — provides the join key for every navigation.
+2. **`onAfterRead`** on the child EntitySet JS file — filters by the discriminator property.
+3. JSON data contains a discriminator field that matches the switch cases.
+
+```
+ParentEntity (ParentUUID)
+  ├─ _TypeA ─┐
+  ├─ _TypeB  ├── all resolve to SharedEntity via getReferentialConstraints
+  └─ _TypeC ─┘
+                  ↓
+       onAfterRead filters by SharedEntity.DemandType
+```
+
+Parent EntityType constraints file:
+
+```js
+// ParentEntityType.js
+function getReferentialConstraints(navigationDetail) {
+    switch (navigationDetail.name) {
+        case '_TypeA':
+        case '_TypeB':
+        case '_TypeC':
+            return [{ sourceProperty: "ParentUUID", targetProperty: "ReferencedObjectUUID" }];
+        default:
+            return navigationDetail.referentialConstraint;
+    }
+}
+module.exports = { getReferentialConstraints };
+```
+
+Child EntitySet discriminator filter:
+
+```js
+// SharedEntity.js
+async function onAfterRead(data, odataRequest) {
+    const segment = odataRequest.queryPath[2];
+    switch (segment.path) {
+        case "_TypeA": return data.filter(item => item.DemandType === "A");
+        case "_TypeB": return data.filter(item => item.DemandType === "B");
+        case "_TypeC": return data.filter(item => item.DemandType === "C");
+        default:       return data;
+    }
+}
+module.exports = { onAfterRead };
+```
 
 ### getReferentialConstraints
 

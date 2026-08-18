@@ -1,6 +1,6 @@
 ---
 name: develop-fiori-feature
-description: Implement any UI feature in a Fiori Freestyle or Fiori Elements project post-setup — views, controllers, OData bindings, routing, i18n, fragments, and annotations. Validates every implementation decision against the UI5 and Fiori MCP servers before writing code. Use for all development work after the project scaffold exists.
+description: Implement any UI feature in a Fiori Freestyle or Fiori Elements project post-setup — views, controllers, OData bindings, routing, i18n, fragments, annotations, and OPA5 tests. Validates every implementation decision against the UI5 and Fiori MCP servers before writing code. Use for all development work after the project scaffold exists.
 ---
 
 # Develop Fiori Feature
@@ -14,7 +14,108 @@ Implement UI features in an existing SAP Fiori / UI5 project. Every decision is 
 - Adding routing targets and navigation
 - Managing i18n keys and translations
 - Writing Fiori Elements annotations (delegates to `annotation-expert`)
+- Writing OPA5 integration tests (uses the standard Fiori Elements V4 OPA test library via UI5 MCP)
 - Any UI development work that follows project scaffolding
+
+---
+
+## OPA5 Reference (Fiori Elements V4 — `sap/fe/test`)
+
+> Applies only to Fiori Elements V4 projects using `sap/fe/test` page objects. For Freestyle OPA5, consult the UI5 MCP for the correct patterns.
+
+### Project setup
+
+Each app page needs a page object registered in `opaTests.qunit.js`:
+
+```js
+sap.ui.require([
+    'sap/fe/test/JourneyRunner',
+    'my/namespace/test/integration/pages/MainObjectPage'
+], function (JourneyRunner, MainObjectPage) {
+    var runner = new JourneyRunner({
+        launchUrl: sap.ui.require.toUrl('my/namespace/test') + '/flpSandbox.html#App-action'
+    });
+    runner.run({ pages: { onTheMainObjectPage: MainObjectPage } }, MyJourney.run);
+});
+```
+
+Page object definition — `componentId` must match the target `"id"` in `manifest.json` under `sap.ui5.routing.targets`:
+
+```js
+sap.ui.define(['sap/fe/test/ObjectPage'], function (ObjectPage) {
+    'use strict';
+    return new ObjectPage(
+        { appId: 'my.namespace', componentId: 'MainObjectPage', contextPath: '/EntitySet' },
+        { actions: {}, assertions: {} }
+    );
+});
+```
+
+### Table interactions
+
+Identify a table by its navigation property binding. When a table has a qualifier (e.g. `UI.LineItem#listTeams`), **always pass `qualifier`** — without it `onTable` cannot uniquely resolve the table and silently matches the wrong one:
+
+```js
+When.onTheObjectPage.onTable({ property: "_Items" }).iPressRow(0);
+When.onTheObjectPage.onTable({ property: "_Items" }).iChangeRow(0, { "Description": "New" });
+Then.onTheObjectPage.onTable({ property: "_Items" }).iCheckCells(0, { "Name": "Expected" });
+Then.onTheObjectPage.onTable({ property: "_Items" }).iCheckRows(3);
+When.onTheObjectPage.onTable({ property: "_Items", qualifier: "listTeams" }).iPressCell(0, "Link");
+```
+
+### Resetting mock data between tests
+
+| Method | What it resets |
+| --- | --- |
+| `iResetTestData()` | `localStorage`, `sessionStorage`, IndexedDB only — does **not** reset mockserver entity data |
+| `iResetMockData(oAppInfo)` | Sends `POST $metadata/reload` to the mockserver — clears all in-memory entity sets and reloads from JSON/JS files |
+
+Use `iResetMockData` whenever a previous test has mutated data (create, update, delete).
+
+```js
+// Before app starts — use ServiceUri (AppId not yet available)
+Given.iResetMockData({
+    ServiceUri: '/sap/opu/odata4/sap/MY_SRV/srvd/sap/my_srv/0001'
+}).and.iStartMyApp("", { Entity: "KEY001" });
+
+// After app starts — use AppId
+Given.iResetMockData({ AppId: 'my.namespace' });
+```
+
+> **Critical**: `ServiceUri` must **not** end with `/`. The framework appends `$metadata/reload` directly — a trailing slash produces a double separator, the mockserver route never matches, and `iResetMockData` silently resolves as successful (`.finally()` sets `bSuccess = true` regardless of HTTP status). The OPA chain continues with stale data and the failure is invisible.
+
+### Teardown
+
+Always end every test module with a teardown test. Without it the next `iStartMyApp` reuses the existing iframe and carries over mock server state:
+
+```js
+opaTest("Teardown", function (Given, When, Then) {
+    Given.iTearDownMyApp();
+});
+```
+
+### Closing an FCL column
+
+`iCloseThisColumn` is not automatically mixed into `ObjectPage`. It lives in `sap/fe/test/FCLView`. Pass `FCLView` as an additional page definition — `ObjectPage` accepts `..._aAdditionalPageDefinitions` and merges them all in:
+
+```js
+sap.ui.define(['sap/fe/test/ObjectPage', 'sap/fe/test/FCLView'], function(ObjectPage, FCLView) {
+    'use strict';
+
+    return new ObjectPage(
+        { appId: 'my.namespace', componentId: 'MySubObjectPage', contextPath: '/EntitySet/_Nav' },
+        { actions: {}, assertions: {} },
+        FCLView   // mixes in iCloseThisColumn, iEnterFullScreenMode, iExitFullScreenMode
+    );
+});
+```
+
+```js
+// Usage in journey
+When.onTheSubObjectPage.iCloseThisColumn();
+```
+
+`FCLView` also provides `iEnterFullScreenMode`, `iExitFullScreenMode`, and assertions `iCheckCloseColumnButton`, `iCheckFullScreenButton`.
 
 ---
 

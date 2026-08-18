@@ -138,6 +138,11 @@ Users pull updates with:
 
 ## Version history
 
+### 1.2.1 — 2026-08-18
+
+- Enhanced: `develop-fiori-feature` OPA5 reference — added `iResetMockData` / `iResetTestData` distinction (with trailing-slash gotcha), table qualifier rule, FCL column pattern via `FCLView`, teardown requirement
+- Enhanced: `write-mockdata` scope clarified to UI5 Tooling projects; added `onDraftPrepare` template, `throwError` API, `queryPath` structure, full `base` API + entity interface reference, and Shared Entity Set discriminator pattern
+
 ### 1.2.0 — 2026-08-18
 
 - Added: `write-mockdata` skill — writes SAP FE Mockserver JSON datasets, JS hook files (`addEntry`, `onAfterRead`, `updateEntry`, `removeEntry`, `executeAction`, `onDraftPrepare`), `getReferentialConstraints`, `EntityContainer` unbound actions, and cross-service communication patterns
