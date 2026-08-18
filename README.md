@@ -2,7 +2,7 @@
 
 A Claude Code plugin that brings SAP Fiori and UI5 development skills, specialist agents, and three MCP servers into any project. Every implementation decision is validated against live MCP tooling before code is written.
 
-**Current version:** 1.1.2 · **Author:** Mohammed Sijas
+**Current version:** 1.2.1 · **Author:** Mohammed Sijas
 
 ---
 
@@ -81,6 +81,7 @@ Covers:
 - Routing and navigation targets in `manifest.json`
 - i18n keys and translations
 - Fiori Elements annotations (delegates to `annotation-expert`)
+- OPA5 integration tests (`sap/fe/test` journey tests for Fiori Elements V4)
 
 Every run follows a strict 10-step protocol:
 
@@ -110,6 +111,23 @@ Useful for understanding an unfamiliar backend before writing binding paths or `
 ### `/ui5-code-review`
 
 Reviews staged files against UI5 best practices. Routes all API validation through the `fiori-frontend-dev` agent, which checks against the UI5 MCP server for deprecated APIs, correct control usage, and binding patterns.
+
+---
+
+### `/write-mockdata`
+
+Writes and maintains `sap-fe-mockserver` (`@sap-ux/ui5-middleware-fe-mockserver`) mockdata for UI5 Tooling projects. Validates all file names and property references against `metadata.xml`.
+
+Covers:
+
+- JSON datasets for entity sets (with draft, `__EntityControl`, `__FieldControl` support)
+- JS hook files: `addEntry`, `onAfterRead`, `updateEntry`, `removeEntry`, `executeAction`, `onDraftPrepare`
+- `getReferentialConstraints` for navigations missing join keys in metadata
+- `EntityContainer.js` for unbound actions and FunctionImports
+- Cross-service communication via `getEntityInterface` with service aliases
+- Shared entity set (discriminator) pattern for multiple navigations pointing to the same entity set
+
+> Applies only to projects using `sap-fe-mockserver` as a UI5 Tooling middleware (`ui5-mock.yaml` or `ui5.yaml`). Does not apply to CAP-native mocking.
 
 ---
 
@@ -196,6 +214,12 @@ Used by: `cap-service-explorer` agent, `develop-fiori-feature` skill (CAP projec
 
 ```text
 /ui5-code-review      ← reviews staged changes against UI5 best practices
+```
+
+### Set up mockdata for testing
+
+```text
+/write-mockdata    ← describe the entity sets and scenarios; the skill writes JSON + JS hook files
 ```
 
 ---

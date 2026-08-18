@@ -53,9 +53,10 @@ This runs `rsync -a --delete` from `.claude/skills/` → `plugins/fiori-dev/skil
 | --- | --- | --- |
 | `/setup-prerequisites` | `.claude/skills/setup-prerequisites/SKILL.md` | Installs MCP servers and Claude Code plugins; skips if run within 7 days |
 | `/project-setup` | `.claude/skills/project-setup/SKILL.md` | Two-phase: analyses requirements + recommends wizard config (Phase 1), then implements features after user scaffolds via Fiori Tools (Phase 2) |
-| `/develop-fiori-feature` | `.claude/skills/develop-fiori-feature/SKILL.md` | Implements UI features post-scaffold; always consults `fiori-frontend-dev` agent before writing code |
+| `/develop-fiori-feature` | `.claude/skills/develop-fiori-feature/SKILL.md` | Implements UI features post-scaffold (views, controllers, bindings, routing, i18n, annotations, OPA5 tests); always consults `fiori-frontend-dev` agent before writing code |
 | `/explore-odata-service` | `.claude/skills/explore-odata-service/SKILL.md` | Explores OData V4 service structure via the `odata-v4-reader` agent |
 | `/ui5-code-review` | `.claude/skills/ui5-code-review/SKILL.md` | Reviews staged files; routes API validation through `fiori-frontend-dev` agent |
+| `/write-mockdata` | `.claude/skills/write-mockdata/SKILL.md` | Writes SAP FE Mockserver mockdata for UI5 Tooling projects — JSON datasets, JS hook files (`addEntry`, `onAfterRead`, `updateEntry`, `removeEntry`, `executeAction`, `onDraftPrepare`), `getReferentialConstraints`, `EntityContainer` unbound actions, and cross-service communication |
 
 ### Agents
 
