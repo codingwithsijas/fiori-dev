@@ -138,6 +138,10 @@ Users pull updates with:
 
 ## Version history
 
+### 1.2.0 — 2026-08-18
+
+- Added: `write-mockdata` skill — writes SAP FE Mockserver JSON datasets, JS hook files (`addEntry`, `onAfterRead`, `updateEntry`, `removeEntry`, `executeAction`, `onDraftPrepare`), `getReferentialConstraints`, `EntityContainer` unbound actions, and cross-service communication patterns
+
 ### 1.1.2 — 2026-07-21
 
 - Fixed: `setup-prerequisites` and `fiori-frontend-dev` now correctly fall back to the plugin's own `config.json` when no `config.local.json` exists in the project root — resolves false "library not configured" warning when libraries are at the default paths
