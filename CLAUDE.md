@@ -139,6 +139,12 @@ Users pull updates with:
 
 ## Version history
 
+### 1.2.2 — 2026-10-15
+
+- Fixed: `write-mockdata` UUID generation — variant segment must be hex-only; replaced `1edd-cust-` example with `1edd-c057-`
+- Fixed: `write-mockdata` `replace_all` duplicate-key guard — added rule to skip the initial targeted edit or guard `replace_all` against records that already have the field
+- Fixed: `write-mockdata` memory.md now uses repo-relative paths (e.g. `Path: .`, `Mockdata location: webapp/localService/mockdata/`) instead of absolute developer paths
+
 ### 1.2.1 — 2026-08-18
 
 - Enhanced: `develop-fiori-feature` OPA5 reference — added `iResetMockData` / `iResetTestData` distinction (with trailing-slash gotcha), table qualifier rule, FCL column pattern via `FCLView`, teardown requirement

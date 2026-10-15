@@ -38,6 +38,8 @@ Write and maintain `sap-fe-mockserver` (`@sap-ux/ui5-middleware-fe-mockserver`) 
 - Every property referenced in any `$select` must exist on the record.
 - Do **not** embed navigation expansions inline in JSON (the mockserver resolves `$expand` via referential constraints). The only exception is attaching a child object to `mockEntry` inside `addEntry` to shape the create response.
 - `__FieldControl` values: `1` = read-only, `3` = optional, `7` = mandatory.
+- **UUID generation**: The variant segment of a UUID must be hex-only (`[0-9a-f]`). Use `c057` (or any valid 4-hex-char value) — never a word like `cust`. Example: `42010aee-c646-1edd-c057-000000000001`.
+- **`replace_all` guard**: When using `replace_all` to add a field, first check whether the field already exists on the record. Either (a) skip the initial targeted single-record edit and rely solely on `replace_all`, or (b) guard the `replace_all` pattern so it only matches records that do **not** already have the field — this prevents duplicate JSON keys.
 
 ### Hook rules
 
@@ -106,7 +108,7 @@ If not found, create the skeleton immediately:
 (populated after Step 1)
 
 ## Mockdata location
-(populated after Step 1)
+(populated after Step 1 — use repo-relative path)
 
 ## Completed mockdata files
 none
@@ -414,12 +416,12 @@ Update `{{absolute_path}}/.claude/skill-memory/write-mockdata/memory.md`:
 # write-mockdata memory — {{project name}}
 
 ## Project
-- Path: {{absolute_path}}
+- Path: .
 - OData version: {{V2 | V4}}
-- Metadata: {{path to metadata.xml}}
+- Metadata: {{repo-relative path to metadata.xml, e.g. webapp/localService/metadata.xml}}
 
 ## Mockdata location
-- {{absolute path to mockdata folder}}
+- {{repo-relative path to mockdata folder, e.g. webapp/localService/mockdata/}}
 
 ## Completed mockdata files
 {{List each file written with a one-line note on purpose}}
