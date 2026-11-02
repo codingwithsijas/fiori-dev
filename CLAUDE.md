@@ -139,6 +139,12 @@ Users pull updates with:
 
 ## Version history
 
+### 1.2.3 — 2026-11-02
+
+- Enhanced: `develop-fiori-feature` — added Fiori Elements V4 Patterns section: `additionalProperties` for programmatically-accessed properties, `enhanceI18n` scope rule, `this.showMessages()` for custom action error handling, and guard ordering in multi-condition action handlers
+- Enhanced: `develop-fiori-feature` — added Fiori Elements V4 Expression Bindings section: `%{property}` vs `${property}` root-entity vs row-entity resolution, string-based formatter paths not working in manifest bindings, handler function paths evaluated once (use expression bindings for reactive visibility)
+- Enhanced: `develop-fiori-feature` OPA5 reference — added `iCheckAction({ visible: false })` assertion pattern, direct Object Page launch via `iStartMyApp("", { Entity: "..." })`, and `requiresSelection` rule for action visibility tests
+
 ### 1.2.2 — 2026-10-15
 
 - Fixed: `write-mockdata` UUID generation — variant segment must be hex-only; replaced `1edd-cust-` example with `1edd-c057-`

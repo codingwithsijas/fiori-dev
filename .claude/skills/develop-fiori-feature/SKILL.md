@@ -94,6 +94,33 @@ opaTest("Teardown", function (Given, When, Then) {
 });
 ```
 
+### Visibility assertions on table actions
+
+`Then.onThePage.onTable({ property: "..." }).iCheckAction("Label", { visible: false })` passes when either:
+- The button's `visible` property is `false`, OR
+- The button was not rendered at all (because its `visible` binding resolved to `false` before rendering)
+
+This is the correct assertion for expression-binding-based visibility — no DOM element may exist at all. `{ visible: true }` checks the button is rendered and visible.
+
+### Starting directly on the Object Page
+
+Use `iStartMyApp("", { Entity: "PROJID" })` to launch directly on the Object Page for a specific entity. This avoids the need for List Report filter setup and is faster/more robust when List Report navigation is not being tested:
+
+```js
+Given.iResetTestData().and.iStartMyApp("", { Project: "PROJID" });
+Then.onTheDetailPage.iSeeThisPage();
+When.onTheDetailPage.iEnterFullScreenMode();
+When.onTheDetailPage.iGoToSection("Billing");
+Then.onTheDetailPage.onTable({ property: "_EntProjProfnlSrvcBillgElmnt" }).iCheckAction("Manage", { visible: false });
+Given.iTearDownMyApp();
+```
+
+### `requiresSelection` and action visibility tests
+
+If a table action button in `controlConfiguration` does not have `"requiresSelection": true`, the button renders regardless of whether any rows are present. Tests asserting the button's `visible` state do not need child entity mock data for the test project.
+
+**Rule:** When testing a `visible` expression binding on a table action, check whether `requiresSelection` is set. If not set (or `false`), no rows are required and the test is simpler.
+
 ### Closing an FCL column
 
 `iCloseThisColumn` is not automatically mixed into `ObjectPage`. It lives in `sap/fe/test/FCLView`. Pass `FCLView` as an additional page definition — `ObjectPage` accepts `..._aAdditionalPageDefinitions` and merges them all in:
@@ -116,6 +143,93 @@ When.onTheSubObjectPage.iCloseThisColumn();
 ```
 
 `FCLView` also provides `iEnterFullScreenMode`, `iExitFullScreenMode`, and assertions `iCheckCloseColumnButton`, `iCheckFullScreenButton`.
+
+---
+
+## Fiori Elements V4 Patterns (built-in knowledge)
+
+### `additionalProperties` for programmatically-accessed OData properties
+
+When `autoExpandSelect: true` is set in the OData model settings, the framework only adds properties to `$select` that are referenced in view XML bindings. Properties accessed purely in JavaScript — e.g. inside a custom `enabled` formatter or a `press` handler via `requestObject`/`requestProperty` — are never added automatically.
+
+**Symptom:** `requestObject("SomeProperty")` logs `"Failed to drill-down into .../SomeProperty, invalid segment: SomeProperty"`. The promise resolves with `undefined`, causing silent incorrect behaviour (e.g. `undefined !== "00"` is always `true`, so a button is always enabled regardless of actual value).
+
+**Fix:** Add the property to `additionalProperties` in `manifest.json` for the relevant page target:
+
+```json
+"settings": {
+  "additionalProperties": ["Customer", "ProcessingStatus"]
+}
+```
+
+**Rule:** Any time a custom enabled formatter or press handler calls `requestObject`/`requestProperty`/`getProperty` on a field that is not bound in the view XML, add that field to `additionalProperties`.
+
+### `enhanceI18n` is only for overriding Fiori Elements framework texts
+
+`enhanceI18n` (configured per page target in `manifest.json`) is exclusively for overriding standard FE framework text keys (e.g. `C_TRANSACTION_HELPER_CONFIRM_DELETE_WITH_OBJECTTITLE_SINGULAR`).
+
+**Rule:** App-specific texts — custom action labels, error messages, section titles — always go in the application's own `webapp/i18n/i18n.properties`. Never add app-specific keys to the `enhanceI18n` file.
+
+### `this.showMessages()` for errors in custom action handlers
+
+In Fiori Elements V4, custom action handlers have `this` bound to the ExtensionAPI. To surface an error, use the FE message framework rather than `sap.m.MessageBox`:
+
+```js
+sap.ui.define([
+    "sap/ui/core/message/Message",
+    "sap/ui/core/message/MessageType"
+], function(Message, MessageType) {
+    return {
+        myAction: function(oContext) {
+            var sMsg = this.getModel("i18n").getResourceBundle().getText("myErrorKey");
+            this.showMessages([new Message({ message: sMsg, type: MessageType.Error })]);
+        }
+    };
+});
+```
+
+`this.showMessages()` displays the error in the Object Page message strip — consistent with how backend errors appear. It is available on `sap.fe.templates.ObjectPage.ExtensionAPI`.
+
+**Rule:** Use `this.showMessages()` whenever a custom press handler needs to show an error without navigating. Avoid `sap.m.MessageBox`.
+
+### Guard order in custom action handlers: most restrictive checks first
+
+When a custom action handler has multiple early-return guards, order them from most restrictive to least. A stage/status check that blocks the action entirely must come before a check that only changes the mode.
+
+**Rule:** Sequence guards as: absolute blocks first (stage prevents the action entirely) → conditional blocks (mode changes) → mode derivation. Wrong order causes a project in multiple states to hit the wrong error message.
+
+---
+
+## Fiori Elements V4 Expression Bindings (built-in knowledge)
+
+### `%{property}` vs `${property}` in manifest.json expression bindings
+
+In Fiori Elements V4 manifest expression bindings (e.g. `visible` on a `controlConfiguration` action), the binding context resolution differs by prefix:
+
+- **`${property}`** — resolves against the **current control's binding context** (e.g. a table row's entity)
+- **`%{property}`** — resolves against the **page's root entity binding context** (the Object Page's main entity)
+
+**Use case:** When a table action needs to read a property from the root entity (e.g. `ProcessingStatus` on a project), use `%{ProcessingStatus}`, not `${ProcessingStatus}`. The sub-entity rows do not have `ProcessingStatus` in their context.
+
+```json
+"visible": "{= ${mCustomModel>/isNewSalesOrderAppEnabled} && %{ProcessingStatus} !== '00' }"
+```
+
+Here `${mCustomModel>/...}` reads from a named JSON model (works in both contexts), and `%{ProcessingStatus}` reads from the page root entity.
+
+### String-based formatter paths do not work in manifest bindings
+
+`"formatter": "namespace.Formatter.method"` in manifest binding expressions requires the function to be available on the global namespace. AMD modules loaded via `sap.ui.define` are not on the global namespace.
+
+**Symptom:** The formatter is never called; the binding evaluates as if the function doesn't exist.
+
+**Fix:** Use an expression binding instead of a formatter path for dynamic visibility based on model properties.
+
+### Handler function paths in `visible` are evaluated once
+
+A `visible` property set to a handler function path is resolved once when the control renders. It does not react to subsequent model changes (e.g. a stage transition). This makes it unsuitable for dynamic visibility that must update after navigation or data changes.
+
+**Fix:** Use expression bindings (`{= ... }`) for reactive visibility. Expression bindings re-evaluate whenever the bound properties change.
 
 ---
 
